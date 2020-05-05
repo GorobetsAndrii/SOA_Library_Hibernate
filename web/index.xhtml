@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+<h:head></h:head>
+<h:body>
+    <h:form>
+        <p:dataTable id="table" value="#{Lib.getAll()}" var="book" widgetVar="bookWidget"
+                     emptyMessage="No books found with given criteria">
+            <p:column headerText="Title">
+                <center>
+                    #{book.title}
+                </center>
+            </p:column>
+            <p:column headerText="Author name" >
+                <center>
+                    #{book.author.name}
+                </center>
+            </p:column>
+            <p:column headerText="Author surname">
+                <center>
+                    #{book.author.surname}
+                </center>
+            </p:column>
+            <p:column headerText="Category">
+                <center>
+                    #{book.category.type}
+                </center>
+            </p:column>
+            <p:column headerText="ISBN" >
+                <center>
+                    #{book.isbn}
+                </center>
+            </p:column>
+            <p:column headerText="Quantity">
+                <center>
+                    #{book.catalog.quantity}
+                </center>
+            </p:column>
+            <p:column headerText="Availability">
+                <center>
+                    #{book.catalog.availability}
+                </center>
+            </p:column>
+            <p:column headerText="Change library">
+                <center>
+                    <h:commandButton value="Delete" update="@form" action="#{Lib.delete(book)}" disabled="#{Lib.isReserved(book)}"/>
+                    <h:outputText value=" "/>
+                    <h:commandButton value="Update" action="#{Lib.openUpdate(book)}"/>
+                    <h:outputText value=" "/>
+                    <h:commandButton value="Lend" update="@form" action="#{LendAction.setLend(book)}" disabled="#{not book.catalog.availability}"/>
+                </center>
+            </p:column>
+        </p:dataTable>
+        <br/><br/>
+        <center>
+            <h:commandButton value="Add catalog" action="#{Lib.openAdd()}" style="font-size: 30px"/><br/><br/>
+            <h:commandButton value="Open readers" action="#{Lib.openReaders()}" style="font-size: 30px"/><br/><br/>
+        </center>
+    </h:form>
+    <hr/>
+    <center>
+        <h:form>
+            <h:outputLabel value="Podaj wszystkich czytelników, którzy pożyczyli książki autora:   "/>
+
+            <p:selectOneMenu value="#{criteriaManager.authorId}" required="true">
+                <f:selectItems value="#{criteriaManager.getAuthors()}" var="author" itemValue="#{author.id}" itemLabel="#{author.name} #{author.surname}"/>
+            </p:selectOneMenu>
+
+            <h:outputLabel value="   w okresie od   "/>
+            <p:inputText value="#{criteriaManager.from}" required="true">
+                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            </p:inputText>
+
+            <h:outputLabel value="   do   "/>
+            <p:inputText value="#{criteriaManager.to}" required="true">
+                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            </p:inputText>
+            <h:outputText value="   "/>
+            <h:commandButton value="submit" action="#{criteriaManager.openCustomResult(1)}" style="font-size: 30px"/>
+        </h:form>
+        <br/><br/>
+
+        <h:form>
+            <h:outputText value="Kto przeczytał książkę:   " />
+
+            <p:selectOneMenu value="#{criteriaManager.bookId}" required="true">
+                <f:selectItems value="#{criteriaManager.getBooks()}" var="book" itemValue="#{book.id}" itemLabel="#{book.title}"/>
+            </p:selectOneMenu>
+
+            <h:outputLabel value="   w okresie od   "/>
+            <p:inputText value="#{criteriaManager.from}" required="true">
+                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            </p:inputText>
+
+            <h:outputLabel value="   do   "/>
+            <p:inputText value="#{criteriaManager.to}" required="true">
+                <f:convertDateTime type="date" pattern="dd.MM.yyyy"/>
+            </p:inputText>
+            <h:outputText value="   "/>
+            <h:commandButton value="submit" action="#{criteriaManager.openCustomResult(2)}" style="font-size: 30px"/>
+        </h:form>
+        <br/><br/>
+
+        <h:form>
+            <h:outputText value="Podaj wszystkich autorów, których książki pożyczył(a):   " />
+
+            <p:selectOneMenu value="#{criteriaManager.readerId}" required="true">
+                <f:selectItems value="#{criteriaManager.getReaders()}" var="reader" itemValue="#{reader.id}" itemLabel="#{reader.name} #{reader.surname}"/>
+            </p:selectOneMenu>
+            <h:outputText value="   "/>
+            <h:commandButton value="submit" action="#{criteriaManager.openCustomResult(3)}" style="font-size: 30px"/>
+        </h:form>
+        <br/><br/>
+
+        <h:form>
+            <h:outputText value="Jakiego autora czyta się:   " />
+            <p:selectOneMenu value="#{criteriaManager.most}" required="true">
+                <f:selectItem itemLabel="Najwięcej" itemValue="true"/>
+                <f:selectItem itemLabel="Najmniej" itemValue="false"/>
+            </p:selectOneMenu>
+            <h:outputText value="   "/>
+            <h:commandButton value="submit" action="#{criteriaManager.openCustomResult(4)}" style="font-size: 30px"/>
+        </h:form>
+    </center>
+</h:body>
+</html>
